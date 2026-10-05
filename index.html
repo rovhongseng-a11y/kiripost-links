@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kiripost | Stories from our Instagram</title>
+<meta name="description" content="Tap a post to read the full story on Kiripost.">
+<meta property="og:title" content="Kiripost | Stories from our Instagram">
+<meta property="og:description" content="Tap a post to read the full story on Kiripost.">
+<meta property="og:image" content="https://links.kiripost.com/assets/apple-touch-icon.png">
+<meta name="theme-color" content="#faf6f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1924" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Kantumruy+Pro:wght@400;600&display=swap" rel="stylesheet">
+<!--
+  KIRIPOST LINK-IN-BIO PAGE
+  ===========================================================================================
+  - The posts come from a Google Sheet (see SETTINGS below). Add a row there and the page
+    updates by itself, usually within 5 minutes. You don't need to edit this file for new posts.
+  - Edit this file only to change the buttons, tabs, tagline or the Sheet address.
+  - If the Sheet can't be reached, the page shows the BACKUP_POSTS list at the bottom instead.
+  ===========================================================================================
+-->
+<style>
+  :root {
+    --page:#faf6f0; --grid:#efe8dc; --ink:#122d4a; --muted:#5a564f; --accent:#065091;
+    --line:#e0d8cb; --tile:#e9e2d6; --pill-bg:#122d4a; --pill-ink:#ffffff;
+    --font:"PP Mori", Inter, "Kantumruy Pro", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page:#0f1924; --grid:#16273a; --ink:#e3eaf2; --muted:#9fb0c3; --accent:#14b3f7;
+      --line:#23364b; --tile:#16273a; --pill-bg:#e3eaf2; --pill-ink:#0f1924;
+    }
+    .logo-light { display:none; }
+    .logo-dark { display:inline-block !important; }
+  }
+  * { box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; }
+  body {
+    margin:0; min-height:100vh; color:var(--ink); font:15px/1.5 var(--font);
+    background-color:var(--page);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:24px 24px;
+  }
+  .wrap { max-width:640px; margin:0 auto; padding:0 16px calc(24px + env(safe-area-inset-bottom)); }
+
+  /* header */
+  header { text-align:center; padding:28px 0 6px; }
+  header img { width:56px; height:auto; }
+  .logo-dark { display:none; }
+  header h1 { margin:6px 0 0; font-size:22px; line-height:1.2; font-weight:600; }
+  header p { margin:2px 0 0; font-size:14px; color:var(--muted); }
+
+  /* buttons */
+  .pills { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:14px 0 6px; margin:0; list-style:none; }
+  .pills a {
+    display:inline-block; min-height:40px; padding:9px 16px; border-radius:999px; font-size:14px; font-weight:600;
+    text-decoration:none; color:var(--ink); border:1.5px solid var(--ink); background:transparent;
+  }
+  .pills a.primary { background:var(--pill-bg); color:var(--pill-ink); border-color:var(--pill-bg); }
+  .pills a:focus-visible, .tabs button:focus-visible, .post:focus-visible, .more:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+
+  /* tabs */
+  .tabs { display:flex; margin:14px 0 14px; border-bottom:1px solid var(--line); }
+  .tabs button {
+    flex:1; appearance:none; background:none; border:0; border-bottom:2px solid transparent; margin-bottom:-1px;
+    padding:10px 4px; font:inherit; font-size:14px; color:var(--muted); cursor:pointer;
+  }
+  .tabs button[aria-selected="true"] { color:var(--ink); font-weight:600; border-bottom-color:var(--accent); }
+
+  /* grid of posts */
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 12px; }
+  @media (min-width:560px) { .grid { grid-template-columns:repeat(3,1fr); } }
+  .post { display:block; text-decoration:none; color:inherit; border-radius:8px; }
+  .post .img { aspect-ratio:4/5; border-radius:8px; overflow:hidden; background:var(--tile); }
+  .post img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .25s; }
+  @media (hover:hover) { .post:hover img { transform:scale(1.03); } .post:hover .hl { text-decoration:underline; } }
+  .post .tag { display:block; margin-top:8px; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); }
+  .post [lang=km] { letter-spacing:0; text-transform:none; line-height:1.6; }
+  .post .hl { display:block; margin-top:2px; font-size:14px; line-height:1.3; font-weight:600; }
+  .post time { display:block; margin-top:3px; font-size:12px; color:var(--muted); }
+  .empty { grid-column:1/-1; text-align:center; color:var(--muted); padding:28px 0; }
+  .more {
+    display:block; margin:22px auto 0; padding:10px 22px; border-radius:999px; font:inherit; font-size:14px; font-weight:600;
+    color:var(--ink); background:transparent; border:1.5px solid var(--ink); cursor:pointer;
+  }
+  footer { text-align:center; padding:26px 0 0; font-size:12px; color:var(--muted); }
+  footer a { color:var(--muted); }
+  .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  @media (prefers-reduced-motion: reduce) { .post img { transition:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo-light" src="assets/logo-navy.png" alt="Kiripost" width="56" height="60">
+    <img class="logo-dark" src="assets/logo-white.png" alt="Kiripost" width="56" height="60">
+    <h1>Kiripost</h1>
+    <p id="tagline"></p>
+  </header>
+  <ul class="pills" id="pills"></ul>
+  <nav class="tabs" role="tablist" aria-label="Posts" id="tabs"></nav>
+  <main>
+    <h2 class="sr-only" id="grid-title">Posts</h2>
+    <div class="grid" id="grid" aria-labelledby="grid-title" aria-live="polite"></div>
+    <button type="button" class="more" id="more" hidden>Show more</button>
+  </main>
+  <footer><a href="https://kiripost.com" id="footer-link">kiripost.com</a></footer>
+</div>
+
+<script>
+/* =========================================================================================
+   SETTINGS  -  the only part you normally change
+   ========================================================================================= */
+const SETTINGS = {
+  // The Google Sheet, published as CSV: File > Share > Publish to web > (the Posts tab) > CSV.
+  // Paste the address it gives you between the quotes. Leave it empty to use BACKUP_POSTS.
+  sheetCsvUrl: "",
+
+  tagline: "Tap a post to read the full story",
+
+  // Buttons under the logo. A button with an empty url is hidden.
+  buttons: [
+    { label: "Website",    url: "https://kiripost.com", primary: true },
+    { label: "Newsletter", url: "" },
+    { label: "Telegram",   url: "" },
+    { label: "ខ្មែរ",       url: "" }
+  ],
+
+  // Tabs. "all: true" shows every post. Otherwise a post shows in a tab when its "tab"
+  // column in the Sheet contains the tab's key (for example "Data" or "Data, Academy").
+  tabs: [
+    { key: "Latest",  label: "Latest", all: true },
+    { key: "Data",    label: "Data stories" },
+    { key: "Academy", label: "Academy" }
+  ],
+
+  // Added to every story link so kiripost.com's analytics show these visits as coming from the Instagram bio.
+  tracking: { utm_source: "instagram", utm_medium: "social", utm_campaign: "link_in_bio" },
+
+  postsPerPage: 24
+};
+
+/* =========================================================================================
+   BACKUP_POSTS  -  shown only when the Sheet can't be loaded. Same columns as the Sheet.
+   Newest first. Replace now and then so the backup isn't too old.
+   ========================================================================================= */
+const BACKUP_POSTS = [
+  { date: "2026-10-05", image: "https://cdn.kiripost.com/static/images/workers_30_2.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/qi-heng-xin-factory-alleged-of-union-busting-global-brands-urged-to-take-action", headline: "Qi Heng Xin Factory Alleged of Union Busting, Global Brands Urged to Take Action", tag: "Business", tab: "" },
+  { date: "2026-10-02", image: "https://cdn.kiripost.com/static/images/starbuck_cambodiajpg.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/lucky-supermarkets-parent-company-to-take-over-all-starbucks-businesses-in-cambodia", headline: "Lucky Supermarket’s Parent Company to Take Over All Starbucks Businesses in Cambodia", tag: "Business", tab: "" },
+  { date: "2026-10-02", image: "https://cdn.kiripost.com/static/images/photo_2026-08-26_10-01-39.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/agroecology-offers-cambodian-farmers-path-to-greater-resilience", headline: "Agroecology Offers Cambodian Farmers Path to Greater Resilience", tag: "Agriculture", tab: "" },
+  { date: "2026-10-02", image: "https://cdn.kiripost.com/static/images/Hun_Manet.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/pm-vows-health-and-education-budgets-will-not-be-cut-amid-higher-defence-spending", headline: "PM Vows Health and Education Budgets Will Not Be Cut Amid Higher Defence Spending", tag: "Education", tab: "" },
+  { date: "2026-10-02", image: "https://cdn.kiripost.com/static/images/Traffic_jam_1.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/212-road-accidents-recorded-in-september-prompting-pchum-ben-safety-concerns", headline: "212 Road Accidents Recorded in September, Prompting Pchum Ben Safety Concerns", tag: "General News", tab: "" },
+  { date: "2026-10-02", image: "https://cdn.kiripost.com/static/images/japaness_12.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/japan-seeks-deeper-ties-with-cambodia-amid-investment-and-border-challenges", headline: "Japan Seeks Deeper Ties with Cambodia Amid Investment and Border Challenges", tag: "Economy", tab: "Data" },
+  { date: "2026-10-02", image: "https://cdn.kiripost.com/static/images/Daily_life_3_2.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/stiglitzs-inequality-warning-prompts-questions-for-cambodia", headline: "Stiglitz’s Inequality Warning Prompts Questions for Cambodia", tag: "Economy", tab: "" },
+  { date: "2026-09-30", image: "https://cdn.kiripost.com/static/images/workers_26.2e16d0ba.fill-960x720.jpg", link: "https://kiripost.com/stories/cambodia-sets-2027-garment-minimum-wage-at-212-as-unions-demand-25066", headline: "Cambodia Sets 2027 Garment Minimum Wage at $212, As Unions Demand $250.66", tag: "Economy", tab: "" }
+];
+
+/* ============================== nothing to change below ============================== */
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const $ = id => document.getElementById(id);
+let posts = null, currentTab = SETTINGS.tabs[0].key, shown = SETTINGS.postsPerPage;
+
+// CSV with quoted fields, commas and line breaks inside quotes
+function parseCSV(text) {
+  const rows = []; let row = [], field = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
+      else field += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(field); field = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field); rows.push(row); row = []; field = "";
+    } else field += c;
+  }
+  if (field !== "" || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+function rowsToPosts(rows) {
+  const head = (rows.shift() || []).map(h => h.trim().toLowerCase());
+  return rows.map(r => Object.fromEntries(head.map((h, i) => [h, (r[i] || "").trim()])));
+}
+function clean(list) {
+  return list.filter(p => p.link && p.image && !/^(yes|y|x|true|hide)$/i.test(p.hide || ""));
+}
+function prettyDate(s) {
+  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s || "");
+  if (!m) return s || "";
+  const d = Number(m[3]), mo = MONTHS[Number(m[2]) - 1], y = Number(m[1]);
+  return d + " " + mo + (y !== new Date().getFullYear() ? " " + y : "");
+}
+function withTracking(url) {
+  try {
+    const u = new URL(url);
+    for (const k in SETTINGS.tracking) if (!u.searchParams.has(k)) u.searchParams.set(k, SETTINGS.tracking[k]);
+    return u.toString();
+  } catch (e) { return url; }
+}
+function inTab(p, tab) {
+  if (tab.all) return true;
+  return (p.tab || "").split(",").map(s => s.trim().toLowerCase()).includes(tab.key.toLowerCase());
+}
+function el(tag, attrs, text) {
+  const e = document.createElement(tag);
+  for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function renderChrome() {
+  $("tagline").textContent = SETTINGS.tagline;
+  const pills = $("pills");
+  SETTINGS.buttons.filter(b => b.url).forEach(b => {
+    const li = el("li");
+    const a = el("a", { href: b.url, class: b.primary ? "primary" : "" }, b.label);
+    if (/[ក-៿]/.test(b.label)) a.setAttribute("lang", "km");
+    li.appendChild(a); pills.appendChild(li);
+  });
+  const tabs = $("tabs");
+  SETTINGS.tabs.forEach(t => {
+    const b = el("button", { type: "button", role: "tab", "aria-selected": String(t.key === currentTab), "data-key": t.key }, t.label);
+    b.addEventListener("click", () => selectTab(t.key, true));
+    tabs.appendChild(b);
+  });
+  $("more").addEventListener("click", () => { shown += SETTINGS.postsPerPage; renderGrid(); });
+}
+function selectTab(key, fromClick) {
+  currentTab = key; shown = SETTINGS.postsPerPage;
+  document.querySelectorAll("#tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.key === key)));
+  if (fromClick) history.replaceState(null, "", key === SETTINGS.tabs[0].key ? location.pathname + location.search : "#" + key.toLowerCase());
+  renderGrid();
+}
+function renderGrid() {
+  const tab = SETTINGS.tabs.find(t => t.key === currentTab) || SETTINGS.tabs[0];
+  const list = (posts || []).filter(p => inTab(p, tab));
+  const grid = $("grid"); grid.textContent = "";
+  $("grid-title").textContent = tab.label;
+  if (posts === null) {            // still loading: grey placeholder tiles
+    for (let i = 0; i < 6; i++) { const s = el("div", { class: "post", "aria-hidden": "true" }); s.appendChild(el("div", { class: "img" })); grid.appendChild(s); }
+    $("more").hidden = true; return;
+  }
+  if (!list.length) { grid.appendChild(el("p", { class: "empty" }, "No posts here yet.")); $("more").hidden = true; return; }
+  list.slice(0, shown).forEach((p, i) => {
+    const a = el("a", { class: "post", href: withTracking(p.link) });
+    const box = el("div", { class: "img" });
+    box.appendChild(el("img", { src: p.image, alt: "", loading: i < 4 ? "eager" : "lazy", decoding: "async" }));
+    a.appendChild(box);
+    if (p.tag) { const t = el("span", { class: "tag" }, p.tag); if (/[\u1780-\u17FF]/.test(p.tag)) t.setAttribute("lang", "km"); a.appendChild(t); }
+    const hl = el("span", { class: "hl" }, p.headline || p.link);
+    if (/[ក-៿]/.test(p.headline || "")) hl.setAttribute("lang", "km");
+    a.appendChild(hl);
+    if (p.date) a.appendChild(el("time", /^\d{4}-\d{1,2}-\d{1,2}/.test(p.date) ? { datetime: p.date.slice(0, 10) } : {}, prettyDate(p.date)));
+    grid.appendChild(a);
+  });
+  $("more").hidden = list.length <= shown;
+}
+
+async function load() {
+  renderChrome();
+  const fromHash = SETTINGS.tabs.find(t => "#" + t.key.toLowerCase() === location.hash.toLowerCase());
+  if (fromHash) currentTab = fromHash.key;
+  selectTab(currentTab, false);
+  let list = clean(BACKUP_POSTS);
+  if (SETTINGS.sheetCsvUrl) {
+    try {
+      const r = await fetch(SETTINGS.sheetCsvUrl, { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const fromSheet = clean(rowsToPosts(parseCSV(await r.text())));
+      if (fromSheet.length) list = fromSheet;
+    } catch (e) { console.warn("Kiripost links: could not load the Sheet, showing BACKUP_POSTS.", e); }
+  }
+  posts = list;
+  renderGrid();
+}
+load();
+</script>
+</body>
+</html>
